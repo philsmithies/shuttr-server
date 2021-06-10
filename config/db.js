@@ -1,9 +1,9 @@
 const Pool = require('pg').Pool
 
 const pool = new Pool({
-    user: 'ryanpierre',
+    user: 'tiago',
     password: '',
-    database: 'find_photos',
+    database: 'cyber',
     host: 'localhost',
     port: 5432
 })
