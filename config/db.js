@@ -43,7 +43,7 @@
 const Pool = require('pg').Pool
 
 const pool = new Pool({
-    user: 'postgres',
+    user: 'ryanpierre',
     password: '',
     database: 'find_photos',
     host: 'localhost',
