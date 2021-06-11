@@ -79,19 +79,6 @@ app.post('/users',  (req, res) => {
     }
   });
 });
-
-app.post('/photos', async (req, res) => { 
-  Photo.findOne({caption: req.body.caption}, async (err, doc)=>{
-      console.log(req.body) 
-      const newPhoto = new Photo({
-        hashtag: req.body.hashtag,
-        caption: req.body.caption,
-        publicId: req.body.publicId
-      });
-      await newPhoto.save();
-      res.send('Photo Created');
-    })
-});
   
 app.post('/login', async (req, res) => {
   try {
@@ -145,18 +132,38 @@ app.get('/images', async(req, res) => {
 })
 
 // photos upload
-app.post('/uploadImage', async (req, res)=> {
-  try {
-    const fileStr = req.body.data
-    const uploadedResponse = await cloudinary.uploader.upload(
-      fileStr, {
-      upload_preset: 'cyber_photos'
+// app.post('/uploadImage', async (req, res)=> {
+//   try {
+   
+//     console.log(uploadedResponse)
+//     res.json({msg: "WOOP WOOP"})
+//   } catch (error){
+//     console.error(error)
+//     res.status(500).json({err: 'something is going bad'})
+//   }
+// })
+
+app.post('/uploadImage', async (req, res) => { 
+  Photo.findOne({caption: req.body.caption}, async (err, doc)=>{
+      try {
+      const fileStr = req.body.data
+      const uploadedResponse = await cloudinary.uploader.upload(
+        fileStr, {
+        upload_preset: 'cyber_photos'
+      })
+      console.log(uploadedResponse)
+      res.json({msg: "WOOP WOOP"})
+      const newPhoto = new Photo({
+        hashtag: req.body.hashtag,
+        caption: req.body.caption,
+        publicId: uploadedResponse.url
+      });
+      await newPhoto.save();
+      res.send('Photo Created');
+    } catch (error){
+      console.error(error)
+      res.status(500).json({err: 'something is going bad'})
+    }
     })
-    console.log(uploadedResponse)
-    res.json({msg: "WOOP WOOP"})
-  } catch (error){
-    console.error(error)
-    res.status(500).json({err: 'something is going bad'})
-  }
-})
+});
 
