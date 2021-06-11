@@ -1,4 +1,5 @@
 // pulls in the express library
+const { cloudinary } = require('./utils/cloudinary');
 const express = require('express');
 const morgan = require("morgan");
 const passport = require('passport');
@@ -26,6 +27,11 @@ useUnifiedTopology: true
 const app = express()
 
 
+// boiler plate on all the images to stop giant images. 
+app.use(express.static('public'));
+app.use(express.json({limit: '50mb'}));
+app.use(express.urlencoded({limit: '50mb'}));
+
 // middleware
 app.use(express.json()) // =>  allows us to read the request or req body
 app.use(cors({
@@ -45,7 +51,6 @@ app.use(cookieParser('secretecode'));
 
 
 //////////// Routes (to be filled out later in tutorial)
-
 
 // define what localhost port we want our server to run on
 const PORT = process.env.PORT || 3001 
@@ -129,19 +134,29 @@ app.get('/users/:id', async (req, res) => {
   }
 })
 
+app.get('/images', async(req, res) => {
+  const {resources} = await cloudinary.search.expression
+  ('folder: cyber_photos').sort_by('public_id', 'desc')
+  .max_results(30)
+  .execute()
+  const publicIds = resources.map( file => file.public_id)
+  // gets a array response of all the public ids we can use to put on the page
+  res.send(publicIds) 
+})
 
-// try {
-//   // await
-//   console.log(req.body)
-  
-//   const { username, password, email} = req.body
+// photos upload
+app.post('/uploadImage', async (req, res)=> {
+  try {
+    const fileStr = req.body.data
+    const uploadedResponse = await cloudinary.uploader.upload(
+      fileStr, {
+      upload_preset: 'cyber_photos'
+    })
+    console.log(uploadedResponse)
+    res.json({msg: "WOOP WOOP"})
+  } catch (error){
+    console.error(error)
+    res.status(500).json({err: 'something is going bad'})
+  }
+})
 
-//   const newUser = await pool.query(
-//       "INSERT INTO users (username, password, email) VALUES ($1, $2, $3) RETURNING *", // returning * lets us see the data in the json response
-//       [username, password, email]
-//   ) 
-//   res.json(newUser.rows[0])
-// } catch (err) {
-//   console.error(err.message)
-// }
-// })
