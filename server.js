@@ -1,6 +1,5 @@
 // pulls in the express library
 const express = require('express');
-const pool = require('./config/db');
 const morgan = require("morgan");
 const passport = require('passport');
 const passportLocal = require('passport-local').Strategy;
@@ -10,7 +9,8 @@ const session = require('express-session');
 const bodyParser = require('body-parser');
 const cors = require('cors')
 const mongoose = require('mongoose');
-const User = require("./users");
+const User = require("./user");
+const Photo = require("./photo");
 
 mongoose.connect("mongodb+srv://admin:adminpassword@cluster0.xu6qx.mongodb.net/cyberPlayground?retryWrites=true&w=majority", 
 {
@@ -73,6 +73,19 @@ app.post('/users',  (req, res) => {
       res.send('User Created');
     }
   });
+});
+
+app.post('/photos', async (req, res) => { 
+  Photo.findOne({caption: req.body.caption}, async (err, doc)=>{
+      console.log(req.body) 
+      const newPhoto = new Photo({
+        hashtag: req.body.hashtag,
+        caption: req.body.caption,
+        publicId: req.body.publicId
+      });
+      await newPhoto.save();
+      res.send('Photo Created');
+    })
 });
   
 app.post('/login', async (req, res) => {
