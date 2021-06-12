@@ -12,7 +12,8 @@ const mongoose = require('mongoose');
 const User = require("./user");
 const Photo = require("./photo");
 const cloudinary = require("./utils/cloudinary");
-const upload = require("./utils/multer");
+const multer  = require('multer')
+const upload = multer({ dest: 'uploads/' })
 
 mongoose.connect("mongodb+srv://admin:adminpassword@cluster0.xu6qx.mongodb.net/cyberPlayground?retryWrites=true&w=majority", 
 {
@@ -31,6 +32,7 @@ const app = express()
 app.use(express.static('public'));
 app.use(express.json({limit: '50mb'}));
 app.use(express.urlencoded({limit: '50mb'}));
+app.use(express.urlencoded({ extended: false }))
 
 // middleware
 app.use(express.json()) // =>  allows us to read the request or req body
@@ -131,29 +133,47 @@ app.get('/images', async(req, res) => {
 })
 
 
-app.post('/uploadImage', async (req, res) => { 
-  console.log(req.body.hashtag)
+// app.post('/uploadImage', async (req, res) => { 
+//   console.log(req.body)
+//   Photo.findOne({hashtag: req.body.hashtag}, async (err, doc)=>{
+//       try {
+//       const fileStr = JSON.stringify(req.body.data)
+//       const uploadedResponse = await cloudinary.uploader.upload(
+//         fileStr, {
+//         upload_preset: 'cyber_photos'
+//       })
+//       console.log(uploadedResponse)
+//       res.json({msg: "WOOP WOOP"})
+//       res.setHeader('Content-Type', 'text/plain');
+//       const newPhoto = new Photo({
+//         hashtag: req.body.hashtag,
+//         caption: req.body.caption,
+//         // publicId: res.json(req.file)
+//       });
+//       await newPhoto.save();
+//       res.send('Photo Created');
+//     } catch (error){
+//       console.error(error)
+//       res.status(500).json({err: 'something is going bad'})
+//     }
+//     })
+// });
+
+app.post('/uploadImage', async (req, res) => {
+  console.log(req.body)
   Photo.findOne({hashtag: req.body.hashtag}, async (err, doc)=>{
-      try {
-      const fileStr = JSON.stringify(req.body.data)
-      const uploadedResponse = await cloudinary.uploader.upload(
-        fileStr, {
-        upload_preset: 'cyber_photos'
-      })
-      // console.log(uploadedResponse)
-      // res.json({msg: "WOOP WOOP"})
-      const newPhoto = new Photo({
+    const fileStr = JSON.stringify(req.body.image)
+    console.log("the post is" + fileStr)
+    if (err) throw err;
+    if (!doc){
+      const newPhoto = new Photo ({
         hashtag: req.body.hashtag,
-        caption: req.body.caption,
-        publicId: res.json(req.file)
+        caption: req.body.caption
       });
       await newPhoto.save();
       res.send('Photo Created');
-    } catch (error){
-      console.error(error)
-      res.status(500).json({err: 'something is going bad'})
     }
-    })
+  });
 });
 
 // app.post("/newphoto", upload.single("image"), async (req, res) => {
