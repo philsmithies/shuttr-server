@@ -1,6 +1,5 @@
 // pulls in the express library
 const express = require('express');
-const pool = require('./config/db');
 const morgan = require("morgan");
 const passport = require('passport');
 const passportLocal = require('passport-local').Strategy;
@@ -10,8 +9,9 @@ const session = require('express-session');
 const bodyParser = require('body-parser');
 const cors = require('cors')
 const mongoose = require('mongoose');
-const User = require("./users");
-
+const User = require("./user");
+const app = express();// allows us to write app and the crud action we want ex. app.get | app.post | app.delete etc...
+//--------------------------------end of imports------------------------------------
 mongoose.connect("mongodb+srv://admin:adminpassword@cluster0.xu6qx.mongodb.net/cyberPlayground?retryWrites=true&w=majority", 
 {
 userNewParser: true,
@@ -22,11 +22,11 @@ useUnifiedTopology: true
 }
 );
 
-// allows us to write app and the crud action we want ex. app.get | app.post | app.delete etc...
-const app = express()
 
 
-// middleware
+
+
+// -------------------------middleware------------------------------------
 app.use(express.json()) // =>  allows us to read the request or req body
 app.use(cors({
   origin: "http://localhost:3000",
@@ -42,8 +42,11 @@ app.use(session({
 }));
 
 app.use(cookieParser('secretecode'));
+app.use(passport.initialize());
+app.use(passport.session());
+require('./passportConfig')(passport);
 
-
+//------------------------END OF MIDDLEWARE----------------------------
 //////////// Routes (to be filled out later in tutorial)
 
 
@@ -53,68 +56,67 @@ const PORT = process.env.PORT || 3001
 app.listen(PORT, ()=> {
     console.log(`Server running on port: ${PORT}`)
 })
-
+//-----------------------------------------------------------------------
 app.get('/', (req, res) => {
   res.send('Hello World')
 })
 
 // create a user
-app.post('/users',  (req, res) => {
-  User.findOne({username: req.body.username}, async (err, doc)=>{
+app.post("/signup", (req, res) => {
+  User.findOne({ username: req.body.username }, async (err, doc) => {
     if (err) throw err;
-    if (doc) res.send('User Already Exists');
-    if (!doc){
+    if (doc) res.send("User Already Exists");
+    if (!doc) {
       const hashedPassword = await bcrypt.hash(req.body.password, 10);
+
       const newUser = new User({
+        name: req.body.name,
+        email: req.body.email,
         username: req.body.username,
         password: hashedPassword,
       });
       await newUser.save();
-      res.send('User Created');
+      res.send("User Created");
     }
   });
 });
   
-app.post('/login', async (req, res) => {
-  try {
-      // await
-      console.log(req.body)
-      
-      const { username, password, email} = req.body
+app.post("/login", (req, res, next) => {
+  passport.authenticate("local", (err, user, info) => {
+    if (err) throw err;
+    if (!user) res.send("No User Exists");
+    else {
+      req.logIn(user, (err) => {
+        if (err) throw err;
+        res.send("Successfully Authenticated");
+        console.log(req.user);
+      });
+    }
+  })(req, res, next);
+});
 
-      const newUser = await pool.query(
-          "SELECT * users WHERE username = $1 AND password = $2", // returning * lets us see the data in the json response
-          [username, password]
-      ) 
-      res.json(newUser.rows[0])
-  } catch (err) {
-      console.error(err.message)
-  }
-})
+app.get("/user", (req, res) => {
+  res.send(req.user); 
+  // The req.user stores the entire user that has been authenticated inside of it.
+});
 
-// get all users
-app.get('/users', async (req, res) => {
-  try {
-      const allUsers = await pool.query("SELECT * FROM users")
-      res.json(allUsers.rows)
-  } catch (err) {
-      console.error(err.message)
-  }
-})
 
-// get only one user
-app.get('/users/:id', async (req, res) => {
-  console.log(req.params)
-  const { id } = req.params
-  try {
-      const user = await pool.query("SELECT * FROM users WHERE id = $1", [id]) 
-      // $1 is a placeholder, then the 2nd argument is what that variable is 
-      //going to be
-      res.json(user.rows[0])
-  } catch (err) {
-      console.error(err.message)
-  }
-})
+app.get('/userl', function(req, res) {
+  User.find({}, function(err, users) {
+    const userMap = {};
+    users.forEach(function(user) {
+      userMap[user] = user;
+    });
+    res.send(userMap);  
+  });
+});
+
+app.get("/logout", (req, res) => {
+  req.logout();
+  res.send("success");
+});
+
+
 
 
 // try {
