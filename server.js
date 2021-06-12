@@ -159,47 +159,45 @@ app.get('/images', async(req, res) => {
 //     })
 // });
 
-app.post('/uploadImage', async (req, res) => {
-  console.log(req.body)
-  Photo.findOne({hashtag: req.body.hashtag}, async (err, doc)=>{
-    const fileStr = JSON.stringify(req.body.image)
-    console.log("the post is" + fileStr)
-    if (err) throw err;
-    if (!doc){
-      const newPhoto = new Photo ({
-        hashtag: req.body.hashtag,
-        caption: req.body.caption
-      });
-      await newPhoto.save();
-      res.send('Photo Created');
-    }
-  });
-});
-
-// app.post("/newphoto", upload.single("image"), async (req, res) => {
-//   // console.log(req.body.image)
-//   try {
-//     // Upload image to cloudinary
-//     // const result = await cloudinary.uploader.upload(req.file.path);
-//     const fileStr = JSON.stringify(req.body.data)
+// app.post('/upload', async (req, res) => {
+//   Photo.findOne({hashtag: req.body.hashtag}, async (err, doc)=>{
+//     const fileStr = JSON.stringify(req.body.image)
+//     console.log("the file is" + fileStr)
 //     const uploadedResponse = await cloudinary.uploader.upload(
 //       fileStr, {
 //       upload_preset: 'cyber_photos'
 //     })
 //     console.log(uploadedResponse)
-//     // Create new user
-//     let user = new User({
-//       hashtag: req.body.hashtag,
-//       caption: req.body.caption,
-//       // publicId: res.json(req.file)
-//       // name: req.body.name,
-//       // avatar: result.secure_url,
-//       publicId: result.public_id
-//     });
-//     // Save user
-//     await user.save();
-//     res.json(user);
-//   } catch (err) {
-//     console.log(err);
-//   }
+//     res.json({msg: "WOOP WOOP"})
+//     if (err) throw err;
+//     if (!doc){
+//       const newPhoto = new Photo ({
+//         imageUrl: req.body.imageUrl,
+//         hashtag: req.body.hashtag,
+//         caption: req.body.caption
+//       });
+//       await newPhoto.save();
+//       res.json(newImage.imageUrl);
+//       res.send('Photo Created');
+//     } 
+//   });
 // });
+
+app.post('/upload', async (req, res) => {
+  try {
+    const newPhoto = new Photo({
+      publicId: req.body.imageUrl,
+      hashtag: req.body.hashtag,
+      caption: req.body.caption
+    });
+    await newPhoto.save();
+    res.json(newPhoto.imageUrl);
+  } catch (err) {
+    console.error('Something went wrong', err);
+  }
+});
+
+app.get('/getLatest', async (req, res) => {
+  const getPhoto = await Photo.findOne().sort({ _id: -1 });
+  res.json(getPhoto.imageUrl);
+});
