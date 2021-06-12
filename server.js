@@ -26,7 +26,7 @@ useUnifiedTopology: true
 // boiler plate on all the images to stop giant images. 
 app.use(express.static('public'));
 app.use(express.json({limit: '50mb'}));
-app.use(express.urlencoded({limit: '50mb'}));
+// app.use(express.urlencoded({limit: '50mb'}));
 
 // middleware
 
