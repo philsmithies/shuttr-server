@@ -1,4 +1,5 @@
 // pulls in the express library
+const { cloudinary } = require('./utils/cloudinary');
 const express = require('express');
 const morgan = require("morgan");
 const passport = require('passport');
@@ -11,7 +12,7 @@ const cors = require('cors')
 const mongoose = require('mongoose');
 const User = require("./user");
 const app = express();// allows us to write app and the crud action we want ex. app.get | app.post | app.delete etc...
-//--------------------------------end of imports------------------------------------
+const Photo = require("./photo");
 mongoose.connect("mongodb+srv://admin:adminpassword@cluster0.xu6qx.mongodb.net/cyberPlayground?retryWrites=true&w=majority", 
 {
 userNewParser: true,
@@ -22,11 +23,13 @@ useUnifiedTopology: true
 }
 );
 
+// boiler plate on all the images to stop giant images. 
+app.use(express.static('public'));
+app.use(express.json({limit: '50mb'}));
+app.use(express.urlencoded({limit: '50mb'}));
 
+// middleware
 
-
-
-// -------------------------middleware------------------------------------
 app.use(express.json()) // =>  allows us to read the request or req body
 app.use(cors({
   origin: "http://localhost:3000",
@@ -48,7 +51,6 @@ require('./passportConfig')(passport);
 
 //------------------------END OF MIDDLEWARE----------------------------
 //////////// Routes (to be filled out later in tutorial)
-
 
 // define what localhost port we want our server to run on
 const PORT = process.env.PORT || 3001 
@@ -118,19 +120,49 @@ app.get("/logout", (req, res) => {
 
 
 
+app.get('/images', async(req, res) => {
+  const {resources} = await cloudinary.search.expression
+  ('folder: cyber_photos').sort_by('public_id', 'desc')
+  .max_results(30)
+  .execute()
+  const publicIds = resources.map( file => file.public_id)
+  // gets a array response of all the public ids we can use to put on the page
+  res.send(publicIds) 
+})
 
-// try {
-//   // await
-//   console.log(req.body)
-  
-//   const { username, password, email} = req.body
-
-//   const newUser = await pool.query(
-//       "INSERT INTO users (username, password, email) VALUES ($1, $2, $3) RETURNING *", // returning * lets us see the data in the json response
-//       [username, password, email]
-//   ) 
-//   res.json(newUser.rows[0])
-// } catch (err) {
-//   console.error(err.message)
-// }
+// photos upload
+// app.post('/uploadImage', async (req, res)=> {
+//   try {
+   
+//     console.log(uploadedResponse)
+//     res.json({msg: "WOOP WOOP"})
+//   } catch (error){
+//     console.error(error)
+//     res.status(500).json({err: 'something is going bad'})
+//   }
 // })
+
+app.post('/uploadImage', async (req, res) => { 
+  Photo.findOne({caption: req.body.caption}, async (err, doc)=>{
+      try {
+      const fileStr = req.body.data
+      const uploadedResponse = await cloudinary.uploader.upload(
+        fileStr, {
+        upload_preset: 'cyber_photos'
+      })
+      console.log(uploadedResponse)
+      res.json({msg: "WOOP WOOP"})
+      const newPhoto = new Photo({
+        hashtag: req.body.hashtag,
+        caption: req.body.caption,
+        publicId: uploadedResponse.url
+      });
+      await newPhoto.save();
+      res.send('Photo Created');
+    } catch (error){
+      console.error(error)
+      res.status(500).json({err: 'something is going bad'})
+    }
+    })
+});
+
