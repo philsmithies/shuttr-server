@@ -1,5 +1,4 @@
 // pulls in the express library
-const { cloudinary } = require('./utils/cloudinary');
 const express = require('express');
 const morgan = require("morgan");
 const passport = require('passport');
@@ -12,6 +11,8 @@ const cors = require('cors')
 const mongoose = require('mongoose');
 const User = require("./user");
 const Photo = require("./photo");
+const cloudinary = require("./utils/cloudinary");
+const upload = require("./utils/multer");
 
 mongoose.connect("mongodb+srv://admin:adminpassword@cluster0.xu6qx.mongodb.net/cyberPlayground?retryWrites=true&w=majority", 
 {
@@ -25,7 +26,6 @@ useUnifiedTopology: true
 
 // allows us to write app and the crud action we want ex. app.get | app.post | app.delete etc...
 const app = express()
-
 
 // boiler plate on all the images to stop giant images. 
 app.use(express.static('public'));
@@ -49,8 +49,7 @@ app.use(session({
 
 app.use(cookieParser('secretecode'));
 
-
-//////////// Routes (to be filled out later in tutorial)
+/// multer config
 
 // define what localhost port we want our server to run on
 const PORT = process.env.PORT || 3001 
@@ -131,32 +130,22 @@ app.get('/images', async(req, res) => {
   res.send(publicIds) 
 })
 
-// photos upload
-// app.post('/uploadImage', async (req, res)=> {
-//   try {
-   
-//     console.log(uploadedResponse)
-//     res.json({msg: "WOOP WOOP"})
-//   } catch (error){
-//     console.error(error)
-//     res.status(500).json({err: 'something is going bad'})
-//   }
-// })
 
 app.post('/uploadImage', async (req, res) => { 
-  Photo.findOne({caption: req.body.caption}, async (err, doc)=>{
+  console.log(req.body.hashtag)
+  Photo.findOne({hashtag: req.body.hashtag}, async (err, doc)=>{
       try {
-      const fileStr = req.body.data
+      const fileStr = JSON.stringify(req.body.data)
       const uploadedResponse = await cloudinary.uploader.upload(
         fileStr, {
         upload_preset: 'cyber_photos'
       })
-      console.log(uploadedResponse)
-      res.json({msg: "WOOP WOOP"})
+      // console.log(uploadedResponse)
+      // res.json({msg: "WOOP WOOP"})
       const newPhoto = new Photo({
         hashtag: req.body.hashtag,
         caption: req.body.caption,
-        publicId: uploadedResponse.url
+        publicId: res.json(req.file)
       });
       await newPhoto.save();
       res.send('Photo Created');
@@ -167,3 +156,30 @@ app.post('/uploadImage', async (req, res) => {
     })
 });
 
+// app.post("/newphoto", upload.single("image"), async (req, res) => {
+//   // console.log(req.body.image)
+//   try {
+//     // Upload image to cloudinary
+//     // const result = await cloudinary.uploader.upload(req.file.path);
+//     const fileStr = JSON.stringify(req.body.data)
+//     const uploadedResponse = await cloudinary.uploader.upload(
+//       fileStr, {
+//       upload_preset: 'cyber_photos'
+//     })
+//     console.log(uploadedResponse)
+//     // Create new user
+//     let user = new User({
+//       hashtag: req.body.hashtag,
+//       caption: req.body.caption,
+//       // publicId: res.json(req.file)
+//       // name: req.body.name,
+//       // avatar: result.secure_url,
+//       publicId: result.public_id
+//     });
+//     // Save user
+//     await user.save();
+//     res.json(user);
+//   } catch (err) {
+//     console.log(err);
+//   }
+// });
