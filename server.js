@@ -12,6 +12,9 @@ const cors = require('cors')
 const mongoose = require('mongoose');
 const User = require("./user");
 const Photo = require("./photo");
+const { restart } = require('nodemon');
+const photo = require('./photo');
+// const { noExtendLeft } = require('sequelize/types/lib/operators');
 
 mongoose.connect("mongodb+srv://admin:adminpassword@cluster0.xu6qx.mongodb.net/cyberPlayground?retryWrites=true&w=majority", 
 {
@@ -40,7 +43,7 @@ app.use(cors({
 }))
 app.use(morgan('tiny'))
 app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({extended: true}));
+app.use(express.urlencoded({extended: true}));
 app.use(session({
     secret: 'secretecode',
     resave: true,
@@ -107,6 +110,8 @@ app.get('/users', async (req, res) => {
   }
 })
 
+
+
 // get only one user
 app.get('/users/:id', async (req, res) => {
   console.log(req.params)
@@ -167,3 +172,12 @@ app.post('/uploadImage', async (req, res) => {
     })
 });
 
+app.get('/photos', function(req, res) {
+  Photo.find( {}, function(err, photos) {
+    const photoMap = []
+    photos.forEach(function(photo) {
+      photoMap.push(photo)
+    })
+    res.send(photoMap)
+  })
+})
