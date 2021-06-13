@@ -1,5 +1,4 @@
 // pulls in the express library
-const { cloudinary } = require('./utils/cloudinary');
 const express = require('express');
 const morgan = require("morgan");
 const passport = require('passport');
@@ -13,8 +12,8 @@ const mongoose = require('mongoose');
 const User = require("./user");
 const Photo = require("./photo");
 const { restart } = require('nodemon');
-const photo = require('./photo');
 // const { noExtendLeft } = require('sequelize/types/lib/operators');
+const cloudinary = require("./utils/cloudinary");
 
 mongoose.connect("mongodb+srv://admin:adminpassword@cluster0.xu6qx.mongodb.net/cyberPlayground?retryWrites=true&w=majority", 
 {
@@ -27,15 +26,18 @@ useUnifiedTopology: true
 );
 
 // allows us to write app and the crud action we want ex. app.get | app.post | app.delete etc...
-const app = express()
-
+const app = express();
 
 // boiler plate on all the images to stop giant images. 
 app.use(express.static('public'));
 app.use(express.json({limit: '50mb'}));
 app.use(express.urlencoded({limit: '50mb'}));
+app.use(express.urlencoded({ extended: false }))
+
+// boiler plate on all the images to stop giant images. 
 
 // middleware
+
 app.use(express.json()) // =>  allows us to read the request or req body
 app.use(cors({
   origin: "http://localhost:3000",
@@ -51,9 +53,12 @@ app.use(session({
 }));
 
 app.use(cookieParser('secretecode'));
+app.use(passport.initialize());
+app.use(passport.session());
+require('./passportConfig')(passport);
 
 
-//////////// Routes (to be filled out later in tutorial)
+//------------------------END OF MIDDLEWARE----------------------------
 
 // define what localhost port we want our server to run on
 const PORT = process.env.PORT || 3001 
@@ -61,56 +66,65 @@ const PORT = process.env.PORT || 3001
 app.listen(PORT, ()=> {
     console.log(`Server running on port: ${PORT}`)
 })
-
+//-----------------------------------------------------------------------
 app.get('/', (req, res) => {
   res.send('Hello World')
 })
 
 // create a user
-app.post('/users',  (req, res) => {
-  User.findOne({username: req.body.username}, async (err, doc)=>{
+app.post("/signup", (req, res) => {
+  User.findOne({ username: req.body.username }, async (err, doc) => {
     if (err) throw err;
-    if (doc) res.send('User Already Exists');
-    if (!doc){
+    if (doc) res.send("User Already Exists");
+    if (!doc) {
       const hashedPassword = await bcrypt.hash(req.body.password, 10);
+
       const newUser = new User({
+        name: req.body.name,
+        email: req.body.email,
         username: req.body.username,
         password: hashedPassword,
       });
       await newUser.save();
-      res.send('User Created');
+      res.send("User Created");
     }
   });
 });
   
-app.post('/login', async (req, res) => {
-  try {
-      // await
-      console.log(req.body)
-      
-      const { username, password, email} = req.body
+app.post("/login", (req, res, next) => {
+  passport.authenticate("local", (err, user, info) => {
+    if (err) throw err;
+    if (!user) res.send("No User Exists");
+    else {
+      req.logIn(user, (err) => {
+        if (err) throw err;
+        res.send("Successfully Authenticated");
+        console.log(req.user);
+      });
+    }
+  })(req, res, next);
+});
 
-      const newUser = await pool.query(
-          "SELECT * users WHERE username = $1 AND password = $2", // returning * lets us see the data in the json response
-          [username, password]
-      ) 
-      res.json(newUser.rows[0])
-  } catch (err) {
-      console.error(err.message)
-  }
-})
-
-// get all users
-app.get('/users', async (req, res) => {
-  try {
-      const allUsers = await pool.query("SELECT * FROM users")
-      res.json(allUsers.rows)
-  } catch (err) {
-      console.error(err.message)
-  }
-})
+app.get("/user", (req, res) => {
+  res.send(req.user); 
+  // The req.user stores the entire user that has been authenticated inside of it.
+});
 
 
+app.get('/userl', function(req, res) {
+  User.find({}, function(err, users) {
+    const userMap = {};
+    users.forEach(function(user) {
+      userMap[user] = user;
+    });
+    res.send(userMap);  
+  });
+});
+
+app.get("/logout", (req, res) => {
+  req.logout();
+  res.send("success");
+});
 
 // get only one user
 app.get('/users/:id', async (req, res) => {
@@ -126,6 +140,7 @@ app.get('/users/:id', async (req, res) => {
   }
 })
 
+
 app.get('/images', async(req, res) => {
   const {resources} = await cloudinary.search.expression
   ('folder: cyber_photos').sort_by('public_id', 'desc')
@@ -136,41 +151,72 @@ app.get('/images', async(req, res) => {
   res.send(publicIds) 
 })
 
-// photos upload
-// app.post('/uploadImage', async (req, res)=> {
-//   try {
-   
+
+// app.post('/uploadImage', async (req, res) => { 
+//   console.log(req.body)
+//   Photo.findOne({hashtag: req.body.hashtag}, async (err, doc)=>{
+//       try {
+//       const fileStr = JSON.stringify(req.body.data)
+//       const uploadedResponse = await cloudinary.uploader.upload(
+//         fileStr, {
+//         upload_preset: 'cyber_photos'
+//       })
+//       console.log(uploadedResponse)
+//       res.json({msg: "WOOP WOOP"})
+//       res.setHeader('Content-Type', 'text/plain');
+//       const newPhoto = new Photo({
+//         hashtag: req.body.hashtag,
+//         caption: req.body.caption,
+//         // publicId: res.json(req.file)
+//       });
+//       await newPhoto.save();
+//       res.send('Photo Created');
+//     } catch (error){
+//       console.error(error)
+//       res.status(500).json({err: 'something is going bad'})
+//     }
+//     })
+// });
+
+// app.post('/upload', async (req, res) => {
+//   Photo.findOne({hashtag: req.body.hashtag}, async (err, doc)=>{
+//     const fileStr = JSON.stringify(req.body.image)
+//     console.log("the file is" + fileStr)
+//     const uploadedResponse = await cloudinary.uploader.upload(
+//       fileStr, {
+//       upload_preset: 'cyber_photos'
+//     })
 //     console.log(uploadedResponse)
 //     res.json({msg: "WOOP WOOP"})
-//   } catch (error){
-//     console.error(error)
-//     res.status(500).json({err: 'something is going bad'})
-//   }
-// })
+//     if (err) throw err;
+//     if (!doc){
+//       const newPhoto = new Photo ({
+//         imageUrl: req.body.imageUrl,
+//         hashtag: req.body.hashtag,
+//         caption: req.body.caption
+//       });
+//       await newPhoto.save();
+//       res.json(newImage.imageUrl);
+//       res.send('Photo Created');
+//     } 
+//   });
+// });
 
-app.post('/uploadImage', async (req, res) => { 
-  Photo.findOne({caption: req.body.caption}, async (err, doc)=>{
-      try {
-      const fileStr = req.body.data
-      const uploadedResponse = await cloudinary.uploader.upload(
-        fileStr, {
-        upload_preset: 'cyber_photos'
-      })
-      console.log(uploadedResponse)
-      res.json({msg: "WOOP WOOP"})
-      const newPhoto = new Photo({
-        hashtag: req.body.hashtag,
-        caption: req.body.caption,
-        publicId: uploadedResponse.url
-      });
-      await newPhoto.save();
-      res.send('Photo Created');
-    } catch (error){
-      console.error(error)
-      res.status(500).json({err: 'something is going bad'})
-    }
-    })
+app.post('/upload', async (req, res) => {
+  try {
+    const newPhoto = new Photo({
+      publicId: req.body.imageUrl,
+      hashtag: req.body.hashtag,
+      caption: req.body.caption,
+      location: req.body.location
+    });
+    await newPhoto.save();
+    res.json(newPhoto.imageUrl);
+  } catch (err) {
+    console.error('Something went wrong', err);
+  }
 });
+
 
 app.get('/photos', function(req, res) {
   Photo.find( {}, function(err, photos) {
@@ -181,3 +227,9 @@ app.get('/photos', function(req, res) {
     res.send(photoMap)
   })
 })
+
+app.get('/getLatest', async (req, res) => {
+  const getPhoto = await Photo.findOne().sort({ _id: -1 });
+  res.json(getPhoto.imageUrl);
+});
+
