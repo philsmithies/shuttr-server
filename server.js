@@ -10,7 +10,6 @@ const bodyParser = require('body-parser');
 const cors = require('cors')
 const mongoose = require('mongoose');
 const User = require("./user");
-const app = express();// allows us to write app and the crud action we want ex. app.get | app.post | app.delete etc...
 const Photo = require("./photo");
 const cloudinary = require("./utils/cloudinary");
 
@@ -25,14 +24,14 @@ useUnifiedTopology: true
 );
 
 // allows us to write app and the crud action we want ex. app.get | app.post | app.delete etc...
-const app = express()
+const app = express();
 
 // boiler plate on all the images to stop giant images. 
 app.use(express.static('public'));
 app.use(express.json({limit: '50mb'}));
 app.use(express.urlencoded({limit: '50mb'}));
 app.use(express.urlencoded({ extended: false }))
-=======
+
 // boiler plate on all the images to stop giant images. 
 
 // middleware
