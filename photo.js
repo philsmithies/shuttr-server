@@ -4,6 +4,7 @@ const photo = new mongoose.Schema({
   caption: String,
   location: String, 
   hashtag: String, 
-  publicId: String
+  publicId: String,
+  location: String
 });
 module.exports = mongoose.model("Photo", photo);
