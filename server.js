@@ -12,8 +12,6 @@ const mongoose = require('mongoose');
 const User = require("./user");
 const Photo = require("./photo");
 const cloudinary = require("./utils/cloudinary");
-const multer  = require('multer')
-const upload = multer({ dest: 'uploads/' })
 
 mongoose.connect("mongodb+srv://admin:adminpassword@cluster0.xu6qx.mongodb.net/cyberPlayground?retryWrites=true&w=majority", 
 {
@@ -188,7 +186,8 @@ app.post('/upload', async (req, res) => {
     const newPhoto = new Photo({
       publicId: req.body.imageUrl,
       hashtag: req.body.hashtag,
-      caption: req.body.caption
+      caption: req.body.caption,
+      location: req.body.location
     });
     await newPhoto.save();
     res.json(newPhoto.imageUrl);
