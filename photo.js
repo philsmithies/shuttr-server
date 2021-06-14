@@ -5,6 +5,8 @@ const photo = new mongoose.Schema({
   location: String, 
   hashtag: String, 
   publicId: String,
-  location: String
+  location: String, 
+  description: String, 
+  coordinates: Object
 });
 module.exports = mongoose.model("Photo", photo);

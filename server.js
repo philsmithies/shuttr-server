@@ -208,7 +208,9 @@ app.post('/upload', async (req, res) => {
       publicId: req.body.imageUrl,
       hashtag: req.body.hashtag,
       caption: req.body.caption,
-      location: req.body.location
+      location: req.body.location,
+      description: req.body.description,
+      coordinates: req.body.coordinates
     });
     await newPhoto.save();
     res.json(newPhoto.imageUrl);
