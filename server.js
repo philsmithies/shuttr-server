@@ -194,6 +194,7 @@ app.post('/upload', async (req, res) => {
       hashtag: req.body.hashtag,
       caption: req.body.caption,
       location: req.body.location,
+      description: req.body.description,
       coordinates: req.body.coordinates
     });
     await newPhoto.save();
