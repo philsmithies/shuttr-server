@@ -203,6 +203,8 @@ app.get('/images', async(req, res) => {
 // });
 
 app.post('/upload', async (req, res) => {
+  res.send(req.user)
+  console.log("hey", req.user)
   try {
     const newPhoto = new Photo({
       publicId: req.body.imageUrl,
@@ -210,8 +212,19 @@ app.post('/upload', async (req, res) => {
       caption: req.body.caption,
       location: req.body.location,
       description: req.body.description,
-      coordinates: req.body.coordinates
+      coordinates: req.body.coordinates,
+      author: req.user.username
     });
+    
+    console.log({
+      publicId: req.body.imageUrl,
+      hashtag: req.body.hashtag,
+      caption: req.body.caption,
+      location: req.body.location,
+      description: req.body.description,
+      coordinates: req.body.coordinates,
+      author: req.user.username
+    })
     await newPhoto.save();
     res.json(newPhoto.imageUrl);
   } catch (err) {

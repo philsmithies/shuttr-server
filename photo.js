@@ -7,6 +7,7 @@ const photo = new mongoose.Schema({
   publicId: String,
   location: String, 
   description: String, 
-  coordinates: Object
+  coordinates: Object,
+  author: {type: mongoose.Types, ref:'User'},
 });
 module.exports = mongoose.model("Photo", photo);
