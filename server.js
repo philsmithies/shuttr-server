@@ -152,59 +152,8 @@ app.get('/images', async(req, res) => {
 })
 
 
-// app.post('/uploadImage', async (req, res) => { 
-//   console.log(req.body)
-//   Photo.findOne({hashtag: req.body.hashtag}, async (err, doc)=>{
-//       try {
-//       const fileStr = JSON.stringify(req.body.data)
-//       const uploadedResponse = await cloudinary.uploader.upload(
-//         fileStr, {
-//         upload_preset: 'cyber_photos'
-//       })
-//       console.log(uploadedResponse)
-//       res.json({msg: "WOOP WOOP"})
-//       res.setHeader('Content-Type', 'text/plain');
-//       const newPhoto = new Photo({
-//         hashtag: req.body.hashtag,
-//         caption: req.body.caption,
-//         // publicId: res.json(req.file)
-//       });
-//       await newPhoto.save();
-//       res.send('Photo Created');
-//     } catch (error){
-//       console.error(error)
-//       res.status(500).json({err: 'something is going bad'})
-//     }
-//     })
-// });
-
-// app.post('/upload', async (req, res) => {
-//   Photo.findOne({hashtag: req.body.hashtag}, async (err, doc)=>{
-//     const fileStr = JSON.stringify(req.body.image)
-//     console.log("the file is" + fileStr)
-//     const uploadedResponse = await cloudinary.uploader.upload(
-//       fileStr, {
-//       upload_preset: 'cyber_photos'
-//     })
-//     console.log(uploadedResponse)
-//     res.json({msg: "WOOP WOOP"})
-//     if (err) throw err;
-//     if (!doc){
-//       const newPhoto = new Photo ({
-//         imageUrl: req.body.imageUrl,
-//         hashtag: req.body.hashtag,
-//         caption: req.body.caption
-//       });
-//       await newPhoto.save();
-//       res.json(newImage.imageUrl);
-//       res.send('Photo Created');
-//     } 
-//   });
-// });
-
 app.post('/upload', async (req, res) => {
   res.send(req.user)
-  console.log("hey", req.user)
   try {
     const newPhoto = new Photo({
       publicId: req.body.imageUrl,
@@ -216,15 +165,6 @@ app.post('/upload', async (req, res) => {
       author: req.user.username
     });
     
-    console.log({
-      publicId: req.body.imageUrl,
-      hashtag: req.body.hashtag,
-      caption: req.body.caption,
-      location: req.body.location,
-      description: req.body.description,
-      coordinates: req.body.coordinates,
-      author: req.user.username
-    })
     await newPhoto.save();
     res.json(newPhoto.imageUrl);
   } catch (err) {
