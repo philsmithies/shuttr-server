@@ -7,7 +7,9 @@ const user = new mongoose.Schema({
   username: {type: String, unique: true,required:true},
   password: {type: String, required: true},
   email: {type: String, unique: true,required:true},
-  images: [{type: mongoose.Types.ObjectId, ref:"Photo"}]
+  images: [{type: mongoose.Schema.Types.ObjectId, ref:"Photo"}],
+  publicId: String, 
+  job:{ type: String, required: true},
   
 });
 user.plugin(uniqueValidator, { message: 'Error, expected {VALUE} to be unique'})

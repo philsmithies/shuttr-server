@@ -84,6 +84,8 @@ app.post("/signup", (req, res) => {
         email: req.body.email,
         username: req.body.username,
         password: hashedPassword,
+        publicId: req.body.publicId,
+        job: req.body.job,
       });
       await newUser.save();
       res.send("User Created");
@@ -164,12 +166,14 @@ app.post('/upload', async (req, res) => {
       coordinates: req.body.coordinates,
       author: req.user.username
     });
-    
+    console.log(req.user.images)
+    req.user.images << newPhoto
     await newPhoto.save();
     res.json(newPhoto.imageUrl);
   } catch (err) {
     console.error('Something went wrong', err);
   }
+  
 });
 
 
@@ -187,4 +191,16 @@ app.get('/getLatest', async (req, res) => {
   const getPhoto = await Photo.findOne().sort({ _id: -1 });
   res.json(getPhoto.imageUrl);
 });
+
+app.get('/user/username/:username', (req, res) => {
+  User.findOne({username:req.params.username})
+  .then(user => {
+    if(!user) {
+      res.status(404).send();
+    }
+    res.send(user);
+  }).catch((e) => {
+    res.status(400).send(e);
+  })
+})
 
