@@ -1,33 +1,17 @@
-// // models/Book.js
 
-// const mongoose = require('mongoose');
 
-// const BookSchema = new mongoose.Schema({
-//   title: {
-//     type: String,
-//     required: true
-//   },
-//   isbn: {
-//     type: String,
-//     required: true
-//   },
-//   author: {
-//     type: String,
-//     required: true
-//   },
-//   description: {
-//     type: String
-//   },
-//   published_date: {
-//     type: Date
-//   },
-//   publisher: {
-//     type: String
-//   },
-//   updated_date: {
-//     type: Date,
-//     default: Date.now
-//   }
-// });
+const mongoose = require("mongoose")
+const uniqueValidator = require('mongoose-unique-validator');
+const user = new mongoose.Schema({
+  name:{ type: String, required: true},
+  username: {type: String, unique: true,required:true},
+  password: {type: String, required: true},
+  email: {type: String, unique: true,required:true},
+  images: [{type: mongoose.Schema.Types.ObjectId, ref:"Photo"}],
+  publicId: String, 
+  job:{ type: String, required: true},
+  
+});
+user.plugin(uniqueValidator, { message: 'Error, expected {VALUE} to be unique'})
 
-// module.exports = Book = mongoose.model('book', BookSchema);
+module.exports = mongoose.model("User", user);
