@@ -3,7 +3,7 @@ const passport = require("passport");
 const bcrypt = require("bcrypt");
 const cookieParser = require("cookie-parser");
 
-require("./utils/passportConfig")(passport);
+require("../utils/passportConfig")(passport);
 app.use(cookieParser("secretcode"));
 app.use(passport.initialize());
 app.use(passport.session());
@@ -46,6 +46,9 @@ let AuthController = {
   logout: (req, res) => {
     req.logout();
     res.send("success");
+  },
+  user: (req, res) => {
+    res.send(req.user);
   },
 };
 

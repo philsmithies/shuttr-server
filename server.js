@@ -60,7 +60,15 @@ app.get("/", (req, res) => {
 });
 
 const AuthControls = require("./controllers/authController");
+const PhotoControls = require("./controllers/photoController");
+const UserControls = require("./controllers/userController");
 
 app.post("/auth/signup", AuthControls.signup);
 app.post("/auth/login", AuthControls.login);
 app.get("/auth/logout", AuthControls.logout);
+
+app.post("/photos/upload", PhotoControls.upload);
+app.post("/photos/all", PhotoControls.all);
+app.get("/photos/getLatest", PhotoControls.getLatest);
+
+app.get("/user/id", UserControls.id);
