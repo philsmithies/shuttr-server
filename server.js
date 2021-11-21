@@ -1,19 +1,19 @@
 const express = require("express");
 const morgan = require("morgan");
-const passport = require("passport");
-// const passportLocal = require("passport-local").Strategy;
-const cookieParser = require("cookie-parser");
-const bcrypt = require("bcrypt");
 const session = require("express-session");
 const bodyParser = require("body-parser");
 const cors = require("cors");
 const mongoose = require("mongoose");
-const User = require("./models/user");
-const Photo = require("./models/photo");
-const cloudinary = require("./utils/cloudinary");
+// const passport = require("passport");
+// const passportLocal = require("passport-local").Strategy;
+// const cookieParser = require("cookie-parser");
+// const bcrypt = require("bcrypt");
+// const User = require("./models/user");
+// const Photo = require("./models/photo");
+// const cloudinary = require("./utils/cloudinary");
 
 mongoose.connect(
-  "mongodb+srv://admin:adminpassword@cluster0.xu6qx.mongodb.net/cyberPlayground?retryWrites=true&w=majority",
+  `mongodb+srv://${process.env.username}:${process.env.password}@cluster0.xu6qx.mongodb.net/cyberPlayground?retryWrites=true&w=majority`,
   {
     userNewParser: true,
     useUnifiedTopology: true,
