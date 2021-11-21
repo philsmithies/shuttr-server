@@ -45,11 +45,6 @@ app.use(
   })
 );
 
-require("./utils/passportConfig")(passport);
-app.use(cookieParser("secretcode"));
-app.use(passport.initialize());
-app.use(passport.session());
-
 //------------------------END OF MIDDLEWARE----------------------------
 
 // define what localhost port we want our server to run on
@@ -58,7 +53,14 @@ const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {
   console.log(`Server running on port: ${PORT}`);
 });
+
 //-----------------------------------------------------------------------
 app.get("/", (req, res) => {
   res.send(`Server is connected on port ${PORT}`);
 });
+
+const AuthControls = require("./controllers/authController");
+
+app.post("/auth/signup", AuthControls.signup);
+app.post("/auth/login", AuthControls.login);
+app.get("/auth/logout", AuthControls.logout);
