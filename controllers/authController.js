@@ -4,9 +4,6 @@ const bcrypt = require("bcrypt");
 const cookieParser = require("cookie-parser");
 
 require("../utils/passportConfig")(passport);
-app.use(cookieParser("secretcode"));
-app.use(passport.initialize());
-app.use(passport.session());
 
 // create a user
 let AuthController = {

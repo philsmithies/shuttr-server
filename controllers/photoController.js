@@ -1,7 +1,7 @@
 let Photo = require("../models/photo.js");
 
 let PhotoController = {
-  upload: (req, res) => {
+  upload: async (req, res) => {
     res.send(req.user);
     try {
       const newPhoto = new Photo({
@@ -30,7 +30,7 @@ let PhotoController = {
       res.send(photoMap);
     });
   },
-  getLatest: (req, res) => {
+  getLatest: async (req, res) => {
     const getPhoto = await Photo.findOne().sort({ _id: -1 });
     res.json(getPhoto.imageUrl);
   },

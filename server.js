@@ -4,16 +4,18 @@ const session = require("express-session");
 const bodyParser = require("body-parser");
 const cors = require("cors");
 const mongoose = require("mongoose");
-// const passport = require("passport");
+const passport = require("passport");
 // const passportLocal = require("passport-local").Strategy;
-// const cookieParser = require("cookie-parser");
+const cookieParser = require("cookie-parser");
 // const bcrypt = require("bcrypt");
 // const User = require("./models/user");
 // const Photo = require("./models/photo");
 // const cloudinary = require("./utils/cloudinary");
 
+require("dotenv").config();
+
 mongoose.connect(
-  `mongodb+srv://${process.env.username}:${process.env.password}@cluster0.xu6qx.mongodb.net/cyberPlayground?retryWrites=true&w=majority`,
+  process.env.databaseURL,
   {
     userNewParser: true,
     useUnifiedTopology: true,
@@ -27,6 +29,10 @@ mongoose.connect(
 const app = express();
 
 // middleware
+app.use(cookieParser("secretcode"));
+app.use(passport.initialize());
+app.use(passport.session());
+
 app.use(express.json()); // =>  allows us to read the request or req body
 app.use(
   cors({
@@ -68,7 +74,7 @@ app.post("/auth/login", AuthControls.login);
 app.get("/auth/logout", AuthControls.logout);
 
 app.post("/photos/upload", PhotoControls.upload);
-app.post("/photos/all", PhotoControls.all);
+app.get("/photos/all", PhotoControls.all);
 app.get("/photos/getLatest", PhotoControls.getLatest);
 
 app.get("/user/id", UserControls.id);
