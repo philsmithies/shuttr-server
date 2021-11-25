@@ -20,7 +20,10 @@ require("dotenv").config();
 mongoose.connect(
   process.env.databaseURL,
   {
-    userNewParser: true,
+    useNewUrlParser: true,
+    // userNewParser: true,
+    useFindAndModify: false,
+    useCreateIndex: true,
     useUnifiedTopology: true,
   },
   () => {
