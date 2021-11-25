@@ -9,8 +9,6 @@ const session = require("express-session");
 const bodyParser = require("body-parser");
 const cors = require("cors");
 const mongoose = require("mongoose");
-const User = require("./models/user");
-const Photo = require("./models/photo");
 const AuthControls = require("./controllers/authController");
 const PhotoControls = require("./controllers/photoController");
 const UserControls = require("./controllers/userController");
@@ -78,7 +76,6 @@ app.get("/photos/getLatest", PhotoControls.getLatest);
 app.get("/user/id", UserControls.id);
 
 app.post("/signup", AuthControls.signup);
-// app.post("/auth/login", AuthControls.login);
 app.get("/logout", AuthControls.logout);
 app.get("/user", AuthControls.user);
 
