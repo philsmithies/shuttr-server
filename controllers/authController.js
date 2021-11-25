@@ -45,6 +45,7 @@ let AuthController = {
     res.send("success");
   },
   user: (req, res) => {
+    console.log(req.user);
     res.send(req.user);
   },
 };

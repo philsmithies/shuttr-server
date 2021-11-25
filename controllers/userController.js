@@ -16,13 +16,3 @@ let UserController = {
 };
 
 module.exports = UserController;
-
-// app.get("/userl", function (req, res) {
-//   User.find({}, function (err, users) {
-//     const userMap = {};
-//     users.forEach(function (user) {
-//       userMap[user] = user;
-//     });
-//     res.send(userMap);
-//   });
-// });

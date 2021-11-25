@@ -1,16 +1,19 @@
+// pulls in the express library
 const express = require("express");
 const morgan = require("morgan");
+const passport = require("passport");
+const passportLocal = require("passport-local").Strategy;
+const cookieParser = require("cookie-parser");
+const bcrypt = require("bcrypt");
 const session = require("express-session");
 const bodyParser = require("body-parser");
 const cors = require("cors");
 const mongoose = require("mongoose");
-const passport = require("passport");
-// const passportLocal = require("passport-local").Strategy;
-const cookieParser = require("cookie-parser");
-// const bcrypt = require("bcrypt");
-// const User = require("./models/user");
-// const Photo = require("./models/photo");
-// const cloudinary = require("./utils/cloudinary");
+const User = require("./models/user");
+const Photo = require("./models/photo");
+const AuthControls = require("./controllers/authController");
+const PhotoControls = require("./controllers/photoController");
+const UserControls = require("./controllers/userController");
 
 require("dotenv").config();
 
@@ -29,10 +32,6 @@ mongoose.connect(
 const app = express();
 
 // middleware
-app.use(cookieParser("secretcode"));
-app.use(passport.initialize());
-app.use(passport.session());
-
 app.use(express.json()); // =>  allows us to read the request or req body
 app.use(
   cors({
@@ -51,6 +50,11 @@ app.use(
   })
 );
 
+app.use(cookieParser("secretcode"));
+app.use(passport.initialize());
+app.use(passport.session());
+require("./utils/passportConfig")(passport);
+
 //------------------------END OF MIDDLEWARE----------------------------
 
 // define what localhost port we want our server to run on
@@ -60,21 +64,31 @@ app.listen(PORT, () => {
   console.log(`Server running on port: ${PORT}`);
 });
 
-//-----------------------------------------------------------------------
 app.get("/", (req, res) => {
-  res.send(`Server is connected on port ${PORT}`);
+  res.send("Server is running");
 });
-
-const AuthControls = require("./controllers/authController");
-const PhotoControls = require("./controllers/photoController");
-const UserControls = require("./controllers/userController");
-
-app.post("/auth/signup", AuthControls.signup);
-app.post("/auth/login", AuthControls.login);
-app.get("/auth/logout", AuthControls.logout);
 
 app.post("/photos/upload", PhotoControls.upload);
 app.get("/photos/all", PhotoControls.all);
 app.get("/photos/getLatest", PhotoControls.getLatest);
 
 app.get("/user/id", UserControls.id);
+
+app.post("/signup", AuthControls.signup);
+// app.post("/auth/login", AuthControls.login);
+app.get("/logout", AuthControls.logout);
+app.get("/user", AuthControls.user);
+
+app.post("/login", (req, res, next) => {
+  passport.authenticate("local", (err, user, info) => {
+    if (err) throw err;
+    if (!user) res.send("No User Exists");
+    else {
+      req.logIn(user, (err) => {
+        if (err) throw err;
+        res.send("Successfully Authenticated");
+        console.log(req.user);
+      });
+    }
+  })(req, res, next);
+});
