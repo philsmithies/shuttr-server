@@ -1,4 +1,4 @@
-let Photo = require("../models/photo.js");
+const Photo = require("../models/photo");
 
 let PhotoController = {
   upload: async (req, res) => {

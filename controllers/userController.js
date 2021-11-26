@@ -1,4 +1,4 @@
-let User = require("../models/user.js");
+const User = require("../models/user");
 
 let UserController = {
   username: (req, res) => {
