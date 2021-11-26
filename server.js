@@ -67,10 +67,6 @@ app.listen(PORT, () => {
 
 app.use(express.static("public"));
 
-app.get("/", (req, res) => {
-  res.send("Server is running");
-});
-
 app.post("/photos/upload", PhotoControls.upload);
 app.get("/photos/all", PhotoControls.all);
 app.get("/photos/getLatest", PhotoControls.getLatest);
