@@ -1,0 +1,59 @@
+.location_newwrapper {
+  max-width: 900px;
+  margin-top: 3em;
+  display: grid;
+  gap: 10px;
+  grid-template-columns: 25px 1fr 1fr 25px;
+  grid-template-rows: 300px;
+}
+
+.location_newphoto {
+  grid-column: 2 / 3;
+  grid-row: 1 / 2;
+  width: 290px;
+  height: 300px;
+  overflow: cover;
+}
+
+.location-img {
+  max-height: 100%;
+}
+
+.location_newmap {
+  grid-column: 3 / 4;
+  grid-row: 1 / 2;
+}
+
+.location_info {
+  text-align: center;
+  grid-column: 2 / 4;
+  grid-row: 2 / 3;
+  color: white;
+  margin-top: 2em;
+  background-color: rgb(46, 46, 46);
+  box-shadow: 0 14px 28px hsl(185deg 90% 18% / 31%),
+    0 10px 10px rgb(255 255 255/ 9%);
+  border-radius: 15px;
+  margin-bottom: 2em;
+  padding: 2em;
+  font-size: 1.1rem;
+}
+
+.location_info a {
+  color: #51fbee;
+}
+
+.location-newtext {
+  color: #51fbee;
+  margin-left: 1.5em;
+}
+
+.location_description {
+  font-style: italic;
+  font-weight: 700;
+  margin-bottom: 0;
+}
+
+.tags {
+  color: orange;
+}
