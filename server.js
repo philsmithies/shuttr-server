@@ -55,7 +55,7 @@ app.use(
 app.use(cookieParser("secretcode"));
 app.use(passport.initialize());
 app.use(passport.session());
-require("./utils/passportConfig")(passport);
+// require("./utils/passportConfig")(passport);
 
 //------------------------END OF MIDDLEWARE----------------------------
 // define what localhost port we want our server to run on
@@ -92,7 +92,7 @@ app.post("/login", (req, res, next) => {
 });
 
 // react router redirects for netlify or heroku hosting, catches and redirects to index.html
-app.get("/*", function (req, res) {
+app.get("/*", cors(), function (req, res) {
   res.sendFile(path.join(__dirname, "/public/index.html"), function (err) {
     if (err) {
       res.status(500).send(err);
