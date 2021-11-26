@@ -35,12 +35,7 @@ const app = express();
 
 // middleware
 app.use(express.json()); // =>  allows us to read the request or req body
-app.use(
-  cors({
-    origin: "http://localhost:3000",
-    credentials: true,
-  })
-);
+app.use(cors());
 app.use(morgan("tiny"));
 app.use(bodyParser.json());
 app.use(express.urlencoded({ extended: true }));
@@ -92,7 +87,7 @@ app.post("/login", (req, res, next) => {
 });
 
 // react router redirects for netlify or heroku hosting, catches and redirects to index.html
-app.get("/*", cors(), function (req, res) {
+app.get("/*", function (req, res) {
   res.sendFile(path.join(__dirname, "/public/index.html"), function (err) {
     if (err) {
       res.status(500).send(err);
