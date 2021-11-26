@@ -1,7 +1,7 @@
 let User = require("../models/user.js");
 
 let UserController = {
-  id: (req, res) => {
+  username: (req, res) => {
     User.findOne({ username: req.params.username })
       .then((user) => {
         if (!user) {

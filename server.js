@@ -73,11 +73,11 @@ app.post("/photos/upload", PhotoControls.upload);
 app.get("/photos/all", PhotoControls.all);
 app.get("/photos/getLatest", PhotoControls.getLatest);
 
-app.get("/user/id", UserControls.id);
-
 app.post("/signup", AuthControls.signup);
 app.get("/logout", AuthControls.logout);
 app.get("/user", AuthControls.user);
+
+app.get("/user/:username", UserControls.username);
 
 app.post("/login", (req, res, next) => {
   passport.authenticate("local", (err, user, info) => {
