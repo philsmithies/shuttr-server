@@ -1,4 +1,5 @@
 // pulls in the express library
+const path = require("path");
 const express = require("express");
 const morgan = require("morgan");
 const passport = require("passport");
@@ -57,13 +58,14 @@ app.use(passport.session());
 require("./utils/passportConfig")(passport);
 
 //------------------------END OF MIDDLEWARE----------------------------
-
 // define what localhost port we want our server to run on
 const PORT = process.env.PORT || 3001;
 
 app.listen(PORT, () => {
   console.log(`Server running on port: ${PORT}`);
 });
+
+app.use(express.static("public"));
 
 app.get("/", (req, res) => {
   res.send("Server is running");
@@ -91,4 +93,13 @@ app.post("/login", (req, res, next) => {
       });
     }
   })(req, res, next);
+});
+
+// react router redirects for netlify or heroku hosting, catches and redirects to index.html
+app.get("/*", function (req, res) {
+  res.sendFile(path.join(__dirname, "/public/index.html"), function (err) {
+    if (err) {
+      res.status(500).send(err);
+    }
+  });
 });
