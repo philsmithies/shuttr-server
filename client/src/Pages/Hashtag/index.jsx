@@ -4,7 +4,7 @@ import axios from "axios";
 import { Image } from "cloudinary-react";
 import Popup from "reactjs-popup";
 import "reactjs-popup/dist/index.css";
-import Location from "../../Components/Location";
+import Location from "../../components/Location";
 
 export default function Hashtag({ searchValue }) {
   const [filteredData, setFilteredData] = useState([]);

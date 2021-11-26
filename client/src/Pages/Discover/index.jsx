@@ -3,7 +3,7 @@ import * as React from "react";
 import { useState, useEffect } from "react";
 import axios from "axios";
 import { Image } from "cloudinary-react";
-import Location from "../../Components/Location";
+import Location from "../../components/Location";
 import Popup from "reactjs-popup";
 import "reactjs-popup/dist/index.css";
 import "./index.css";
