@@ -85,8 +85,6 @@ app.listen(PORT, () => {
   console.log(`Server running on port: ${PORT}`);
 });
 
-app.use(express.static("public"));
-
 app.post("/photos/upload", PhotoControls.upload);
 app.get("/photos/all", PhotoControls.all);
 app.get("/photos/getLatest", PhotoControls.getLatest);
@@ -109,13 +107,4 @@ app.post("/login", (req, res, next) => {
       });
     }
   })(req, res, next);
-});
-
-// react router redirects for netlify or heroku hosting, catches and redirects to index.html
-app.get("/*", function (req, res) {
-  res.sendFile(path.join(__dirname, "/public/index.html"), function (err) {
-    if (err) {
-      res.status(500).send(err);
-    }
-  });
 });
