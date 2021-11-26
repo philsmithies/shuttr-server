@@ -1,5 +1,5 @@
 const User = require("../models/user");
-const bcrypt = require("bcrypt");
+const bcrypt = require("bcrypt-nodejs");
 const cookieParser = require("cookie-parser");
 
 // create a user
