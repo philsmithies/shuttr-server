@@ -2,12 +2,12 @@ const mongoose = require("mongoose");
 const photo = new mongoose.Schema({
   photo_id: String,
   caption: String,
-  location: String, 
-  hashtag: String, 
+  location: String,
+  hashtag: String,
   publicId: String,
-  location: String, 
-  description: String, 
+  location: String,
+  description: String,
   coordinates: Object,
-  author: {type: mongoose.Types, ref:'User'},
+  author: { type: mongoose.Types, ref: "Photo" },
 });
 module.exports = mongoose.model("Photo", photo);

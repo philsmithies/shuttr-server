@@ -82,7 +82,11 @@ app.use(passport.session());
 const PORT = process.env.PORT || 3001;
 
 app.listen(PORT, () => {
-  console.log(`Server running on port: ${PORT}`);
+  console.log(`Server running on port: http://localhost:${PORT}`);
+});
+
+app.get("/", (req, res) => {
+  res.send("Shuttr Server");
 });
 
 app.post("/photos/upload", PhotoControls.upload);
