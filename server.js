@@ -34,6 +34,7 @@ mongoose.connect(
 
 // allows us to write app and the crud action we want ex. app.get | app.post | app.delete etc...
 const app = express();
+let server = require("http").Server(app);
 
 // middleware
 app.use(express.json()); // =>  allows us to read the request or req body
@@ -83,8 +84,12 @@ app.use(passport.session());
 // define what localhost port we want our server to run on
 const PORT = process.env.PORT || 3001;
 
-app.listen(PORT, () => {
-  console.log(`Server running on port: http://localhost:${PORT}`);
+// app.listen(PORT, () => {
+//   console.log(`Server running on port: http://localhost:${PORT}`);
+// });
+
+server.listen(PORT, () => {
+  console.log("App is running on port " + port);
 });
 
 app.get("/", (req, res) => {
