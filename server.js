@@ -19,7 +19,7 @@ const jwt = require("jsonwebtoken");
 require("dotenv").config();
 
 mongoose.connect(
-  process.env.databaseURL,
+  "mongodb+srv://admin:adminpassword@cluster0.xu6qx.mongodb.net/cyberPlayground?retryWrites=true&w=majority",
   {
     useNewUrlParser: true,
     // userNewParser: true,
