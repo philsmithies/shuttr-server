@@ -91,16 +91,16 @@ app.get("/", (req, res) => {
   res.send("Shuttr Server");
 });
 
-app.post("/photos/upload", PhotoControls.upload);
-app.get("/photos/all", PhotoControls.all);
-app.get("/photos/getLatest", PhotoControls.getLatest);
+app.post("/api/photos/upload", PhotoControls.upload);
+app.get("/api/photos/all", PhotoControls.all);
+app.get("/api/photos/getLatest", PhotoControls.getLatest);
 
-app.post("/signup", AuthControls.signup);
-app.get("/logout", AuthControls.logout);
+app.post("/api/signup", AuthControls.signup);
+app.get("/api/logout", AuthControls.logout);
 app.get("/user", AuthControls.user);
 
-app.get("/user/:username", UserControls.username);
-app.get("/users", UserControls.users);
+app.get("/api/user/:username", UserControls.username);
+app.get("/api/users", UserControls.users);
 
 // app.post("/login", async (request, response) => {
 //   passport.authenticate("jwt", (err, user, info) => {
@@ -116,7 +116,7 @@ app.get("/users", UserControls.users);
 //   })(req, res, next);
 // });
 
-app.post("/login", async (request, response) => {
+app.post("/api/login", async (request, response) => {
   const { username, password } = request.body;
 
   const user = await User.findOne({ username });

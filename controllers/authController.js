@@ -6,41 +6,27 @@ const cookieParser = require("cookie-parser");
 let AuthController = {
   signup: async (req, res) => {
     const { username, name, password, email, publicId, job } = req.body;
+    User.findOne({ username: req.body.username }, async (err, doc) => {
+      if (err) throw err;
+      if (doc) res.send("User Already Exists");
+      if (!doc) {
+        const saltRounds = 10;
+        const passwordHash = await bcrypt.hash(password, 10);
 
-    const saltRounds = 10;
-    const passwordHash = await bcrypt.hash(password, 10);
+        const user = new User({
+          username,
+          email,
+          name,
+          password: passwordHash,
+          publicId,
+          job,
+        });
 
-    const user = new User({
-      username,
-      email,
-      name,
-      password: passwordHash,
-      publicId,
-      job,
+        const savedUser = await user.save();
+        res.send("User Created");
+        res.status(201).json(savedUser);
+      }
     });
-
-    const savedUser = await user.save();
-
-    res.status(201).json(savedUser);
-    // User.findOne({ username: req.body.username }, async (err, doc) => {
-    //   if (err) throw err;
-    //   if (doc) res.send("User Already Exists");
-    //   if (!doc) {
-    //     const hashedPassword = await bcrypt.hash(req.body.password, 10);
-
-    //     const newUser = new User({
-    //       name: req.body.name,
-    //       email: req.body.email,
-    //       username: req.body.username,
-    //       password: hashedPassword,
-    //       publicId: req.body.publicId,
-    //       job: req.body.job,
-    //     });
-    //     await newUser.save();
-    //     res.send("User Created");
-    //     response.status(201).json(savedUser);
-    //   }
-    // });
   },
   logout: (req, res) => {
     req.logout();
