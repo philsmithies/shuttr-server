@@ -89,7 +89,7 @@ const PORT = process.env.PORT || 3001;
 // });
 
 server.listen(PORT, () => {
-  console.log("App is running on port number " + PORT);
+  console.log("App is running on port number with the port" + PORT);
 });
 
 app.get("/", (req, res) => {
