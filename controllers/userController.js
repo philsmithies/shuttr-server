@@ -13,6 +13,10 @@ let UserController = {
         res.status(400).send(e);
       });
   },
+  users: async (req, res) => {
+    const users = await User.find({});
+    res.json(users);
+  },
 };
 
 module.exports = UserController;

@@ -5,7 +5,7 @@ const morgan = require("morgan");
 const passport = require("passport");
 const passportLocal = require("passport-local").Strategy;
 const cookieParser = require("cookie-parser");
-const bcrypt = require("bcrypt-nodejs");
+const bcrypt = require("bcrypt");
 const session = require("express-session");
 const bodyParser = require("body-parser");
 const cors = require("cors");
@@ -13,6 +13,8 @@ const mongoose = require("mongoose");
 const AuthControls = require("./controllers/authController");
 const PhotoControls = require("./controllers/photoController");
 const UserControls = require("./controllers/userController");
+const User = require("./models/user");
+const jwt = require("jsonwebtoken");
 
 require("dotenv").config();
 
@@ -98,17 +100,43 @@ app.get("/logout", AuthControls.logout);
 app.get("/user", AuthControls.user);
 
 app.get("/user/:username", UserControls.username);
+app.get("/users", UserControls.users);
 
-app.post("/login", (req, res, next) => {
-  passport.authenticate("local", (err, user, info) => {
-    if (err) throw err;
-    if (!user) res.send("No User Exists");
-    else {
-      req.logIn(user, (err) => {
-        if (err) throw err;
-        res.send("Successfully Authenticated");
-        console.log(req.user);
-      });
-    }
-  })(req, res, next);
+// app.post("/login", async (request, response) => {
+//   passport.authenticate("jwt", (err, user, info) => {
+//     if (err) throw err;
+//     if (!user) res.send("No User Exists");
+//     else {
+//       req.logIn(user, (err) => {
+//         if (err) throw err;
+//         res.send("Successfully Authenticated");
+//         console.log(req.user);
+//       });
+//     }
+//   })(req, res, next);
+// });
+
+app.post("/login", async (request, response) => {
+  const { username, password } = request.body;
+
+  const user = await User.findOne({ username });
+  const passwordCorrect =
+    user === null ? false : await bcrypt.compare(password, user.password);
+
+  if (!(user && passwordCorrect)) {
+    return response.status(401).json({
+      error: "invalid username or password",
+    });
+  }
+
+  const userForToken = {
+    username: user.username,
+    id: user._id,
+  };
+
+  const token = jwt.sign(userForToken, process.env.SECRET);
+
+  response
+    .status(200)
+    .send({ token, username: user.username, name: user.name });
 });
