@@ -81,6 +81,7 @@ app.post("/api/login", async (request, response) => {
   };
 
   const token = jwt.sign(userForToken, "secretpassword");
+  response.setHeader("Access-Control-Allow-Headers", "Authorization");
 
   response
     .status(200)
