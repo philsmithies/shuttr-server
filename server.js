@@ -29,7 +29,7 @@ mongoose.connect(
 );
 
 // allows us to write app and the crud action we want ex. app.get | app.post | app.delete etc...
-const serverapp = express();
+const app = express();
 let server = require("http").Server(app);
 
 // middleware
@@ -47,20 +47,20 @@ server.listen(PORT, () => {
   console.log("App is running on port " + PORT);
 });
 
-server.get("/", (req, res) => {
+app.get("/", (req, res) => {
   res.send("Shuttr Server");
 });
 
-server.post("/api/photos/upload", PhotoControls.upload);
-server.get("/api/photos/all", PhotoControls.all);
-server.get("/api/photos/getLatest", PhotoControls.getLatest);
+app.post("/api/photos/upload", PhotoControls.upload);
+app.get("/api/photos/all", PhotoControls.all);
+app.get("/api/photos/getLatest", PhotoControls.getLatest);
 
-server.post("/api/signup", AuthControls.signup);
-server.get("/api/logout", AuthControls.logout);
-server.get("/user", AuthControls.user);
+app.post("/api/signup", AuthControls.signup);
+app.get("/api/logout", AuthControls.logout);
+app.get("/user", AuthControls.user);
 
-server.get("/api/user/:username", UserControls.username);
-server.get("/api/users", UserControls.users);
+app.get("/api/user/:username", UserControls.username);
+app.get("/api/users", UserControls.users);
 
 app.post("/api/login", async (request, response) => {
   const { username, password } = request.body;
