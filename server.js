@@ -32,14 +32,9 @@ mongoose.connect(
 const app = express();
 let server = require("http").Server(app);
 
-const corsOptions = {
-  origin: "http://localhost:3000",
-  optionsSuccessStatus: 200, // For legacy browser support
-};
-
 // middleware
 app.use(express.json()); // =>  allows us to read the request or req body
-app.use(cors(corsOptions));
+app.use(cors({ credentials: true, origin: "http://localhost:3000" }));
 app.use(morgan("tiny"));
 app.use(bodyParser.json());
 app.use(express.urlencoded({ extended: true }));
