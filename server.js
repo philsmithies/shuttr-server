@@ -2,11 +2,7 @@
 const path = require("path");
 const express = require("express");
 const morgan = require("morgan");
-const passport = require("passport");
-const passportLocal = require("passport-local").Strategy;
-const cookieParser = require("cookie-parser");
 const bcrypt = require("bcrypt");
-const session = require("express-session");
 const bodyParser = require("body-parser");
 const cors = require("cors");
 const mongoose = require("mongoose");
@@ -42,54 +38,13 @@ app.use(cors());
 app.use(morgan("tiny"));
 app.use(bodyParser.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(
-  session({
-    secret: "secretcode",
-    resave: true,
-    saveUninitialized: true,
-  })
-);
-
-// Add headers before the routes are defined
-app.use(function (req, res, next) {
-  // Website you wish to allow to connect
-  res.setHeader("Access-Control-Allow-Origin", "*");
-
-  // Request methods you wish to allow
-  res.setHeader(
-    "Access-Control-Allow-Methods",
-    "GET, POST, OPTIONS, PUT, PATCH, DELETE"
-  );
-
-  // Request headers you wish to allow
-  res.setHeader(
-    "Access-Control-Allow-Headers",
-    "X-Requested-With,content-type"
-  );
-
-  // Set to true if you need the website to include cookies in the requests sent
-  // to the API (e.g. in case you use sessions)
-  res.setHeader("Access-Control-Allow-Credentials", true);
-
-  // Pass to next layer of middleware
-  next();
-});
-
-app.use(cookieParser("secretcode"));
-app.use(passport.initialize());
-app.use(passport.session());
-// require("./utils/passportConfig")(passport);
 
 //------------------------END OF MIDDLEWARE----------------------------
 // define what localhost port we want our server to run on
 const PORT = process.env.PORT || 3001;
 
-// app.listen(PORT, () => {
-//   console.log(`Server running on port: http://localhost:${PORT}`);
-// });
-
 server.listen(PORT, () => {
-  console.log("App is running on port number with the port" + PORT);
+  console.log("App is running on port " + PORT);
 });
 
 app.get("/", (req, res) => {
@@ -106,20 +61,6 @@ app.get("/user", AuthControls.user);
 
 app.get("/api/user/:username", UserControls.username);
 app.get("/api/users", UserControls.users);
-
-// app.post("/login", async (request, response) => {
-//   passport.authenticate("jwt", (err, user, info) => {
-//     if (err) throw err;
-//     if (!user) res.send("No User Exists");
-//     else {
-//       req.logIn(user, (err) => {
-//         if (err) throw err;
-//         res.send("Successfully Authenticated");
-//         console.log(req.user);
-//       });
-//     }
-//   })(req, res, next);
-// });
 
 app.post("/api/login", async (request, response) => {
   const { username, password } = request.body;

@@ -1,6 +1,5 @@
 const User = require("../models/user");
 const bcrypt = require("bcrypt");
-const cookieParser = require("cookie-parser");
 
 // create a user
 let AuthController = {
@@ -28,8 +27,7 @@ let AuthController = {
       }
     });
   },
-  logout: (req, res) => {
-    req.logout();
+  logout: (_req, res) => {
     res.send("success");
   },
   user: (req, res) => {
