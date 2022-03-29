@@ -80,7 +80,7 @@ app.post("/api/login", async (request, response) => {
     id: user._id,
   };
 
-  const token = jwt.sign(userForToken, process.env.SECRET);
+  const token = jwt.sign(userForToken, "secretpassword");
 
   response
     .status(200)
