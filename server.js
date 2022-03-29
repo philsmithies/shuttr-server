@@ -34,7 +34,7 @@ let server = require("http").Server(app);
 
 // middleware
 app.use(express.json()); // =>  allows us to read the request or req body
-app.use(cors({ credentials: true, origin: "http://localhost:3000" }));
+app.use(cors({ credentials: true, origin: "https://shuttr-fe.vercel.app/" }));
 app.use(morgan("tiny"));
 app.use(bodyParser.json());
 app.use(express.urlencoded({ extended: true }));
