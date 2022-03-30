@@ -37,7 +37,7 @@ app.use(express.json()); // =>  allows us to read the request or req body
 app.use(
   cors({
     credentials: true,
-    origin: "https://shuttr-fe.vercel.app",
+    origin: "https://shuttr.vercel.app",
   })
 );
 app.use(morgan("tiny"));
